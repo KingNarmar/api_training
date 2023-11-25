@@ -17,7 +17,7 @@ class ProductsInCategoryScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            NavigatorHelper.goTo(
+            NavigatorHelper.goToAndOff(
                 context,
                 AddProductScreen(
                   categoryModel: category,
