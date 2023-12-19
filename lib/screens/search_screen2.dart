@@ -1,7 +1,7 @@
 import 'package:api_training/componants/custom_grid_view_item.dart';
-import 'package:api_training/componants/custome_bottom_sheet.dart';
 import 'package:api_training/models/product_model.dart';
 import 'package:api_training/repos/dio_helper.dart';
+import 'package:api_training/repos/end_points.dart';
 import 'package:flutter/material.dart';
 
 class SearchScreen2 extends StatefulWidget {
@@ -14,8 +14,9 @@ class SearchScreen2 extends StatefulWidget {
 class _SearchScreen2State extends State<SearchScreen2> {
   final search2Controller = TextEditingController();
 
-  final List<ProductModel> products2 = [];
-  double start = 0;
+  List<ProductModel> products2 = [];
+  bool isLoading = false;
+  double start = 1;
   double end = 1000;
   _search() {
     String searchText = search2Controller.text.toLowerCase();
@@ -29,6 +30,25 @@ class _SearchScreen2State extends State<SearchScreen2> {
     });
   }
 
+  void _searchByPriceRange() {
+    products2 = [];
+    setState(() {
+      isLoading = true;
+    });
+    DioHelper.dio.get("$getProductsByPriceApiUrl${search2Controller.text}",
+        queryParameters: {
+          "price_min": start,
+          "price_max": end
+        }).then((response) {
+      for (var element in response.data) {
+        products2.add(ProductModel.fromJson(element));
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,8 +57,60 @@ class _SearchScreen2State extends State<SearchScreen2> {
         actions: [
           IconButton(
               onPressed: () {
-                CustomBottomSheet.customShowModalBottomSheet(
-                    context, start, end);
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        return BottomSheet(
+                          onClosing: () {},
+                          builder: (context) {
+                            return SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.5,
+                              child: Column(
+                                children: [
+                                  RangeSlider(
+                                    divisions: 1000,
+                                    values: RangeValues(start, end),
+                                    min: 0,
+                                    max: 1000,
+                                    labels: const RangeLabels(
+                                        "Min Price", "Max Price"),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        start = value.start;
+                                        end = value.end;
+                                      });
+                                    },
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${start.toInt()} \$"),
+                                        Text("${end.toInt()} \$"),
+                                      ],
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _searchByPriceRange();
+                                    },
+                                    child: const Text("Filter by Price"),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                );
               },
               icon: const Icon(Icons.filter_list))
         ],

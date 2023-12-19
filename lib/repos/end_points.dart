@@ -9,3 +9,4 @@ const String getProductsByTitleApiUrl =
 const String createProductApiUrl = "https://api.escuelajs.co/api/v1/products/";
 const String getProductsByPriceApiUrl =
     "https://api.escuelajs.co/api/v1/products/";
+const String getProfile = "https://api.escuelajs.co/api/v1/auth/profile";

@@ -23,6 +23,18 @@ abstract class NavigatorHelper {
     );
   }
 
+  static goToAndOffAll(context, Widget screen) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return screen;
+        },
+      ),
+      (route) => false,
+    );
+  }
+
   static goBack(context) {
     Navigator.pop(context);
   }

@@ -31,7 +31,7 @@ class DioHelper {
           await SharedHelper.prefs.setBool("isLogin", true);
           await SharedHelper.prefs
               .setString(
-            "access_token",
+            "token",
             response.data["access_token"].toString(),
           )
               .then((value) {

@@ -4,6 +4,7 @@ import 'package:api_training/repos/dio_helper.dart';
 import 'package:api_training/repos/navigator_helper.dart';
 import 'package:api_training/repos/shared_helper.dart';
 import 'package:api_training/screens/login_screen.dart';
+import 'package:api_training/screens/profile_screen.dart';
 import 'package:api_training/screens/search_screen2.dart';
 import 'package:flutter/material.dart';
 import '../componants/custom_category_list_view_item.dart';
@@ -27,16 +28,20 @@ class HomeScreen extends StatelessWidget {
               )),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                NavigatorHelper.goTo(context, const ProfileScreen());
+              },
               icon: const Icon(Icons.person),
             ),
             IconButton(
-              onPressed: () {
-                SharedHelper.prefs.setBool("isLogin", false);
-                NavigatorHelper.goToAndOff(
-                  context,
-                  const LoginScreen(),
-                );
+              onPressed: () async {
+                await SharedHelper.prefs.setBool("isLogin", false);
+                await SharedHelper.prefs.remove("access_token").then((value) {
+                  NavigatorHelper.goToAndOffAll(
+                    context,
+                    const LoginScreen(),
+                  );
+                });
               },
               icon: const Icon(Icons.logout),
             )
